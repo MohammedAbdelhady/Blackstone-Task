@@ -1,49 +1,24 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
+  Count, repository
 } from '@loopback/repository';
 import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
+  getModelSchemaRef, param,
   patch,
   post,
-  requestBody,
+  requestBody
 } from '@loopback/rest';
+import {ApplicationError} from '../Errors/application.error';
 import {
-  Car,
-  AccessCard,
+  AccessCard, Car
 } from '../models';
-import {CarRepository} from '../repositories';
+import {AccessCardRepository, CarRepository} from '../repositories';
+
 
 export class CarAccessCardController {
   constructor(
     @repository(CarRepository) protected carRepository: CarRepository,
+     @repository(AccessCardRepository) protected accessCardRepository: AccessCardRepository,
   ) { }
-
-  @get('/cars/{id}/access-card', {
-    responses: {
-      '200': {
-        description: 'Car has one AccessCard',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(AccessCard),
-          },
-        },
-      },
-    },
-  })
-  async get(
-    @param.path.string('id') id: string,
-    @param.query.object('filter') filter?: Filter<AccessCard>,
-  ): Promise<AccessCard> {
-    return this.carRepository.accessCard(id).get(filter);
-  }
 
   @post('/cars/{id}/access-card', {
     responses: {
@@ -60,13 +35,27 @@ export class CarAccessCardController {
         'application/json': {
           schema: getModelSchemaRef(AccessCard, {
             title: 'NewAccessCardInCar',
-            exclude: ['id'],
-            optional: ['carId']
+            exclude: ['id', 'carId', 'lastChargedDate'],
           }),
         },
       },
     }) accessCard: Omit<AccessCard, 'id'>,
   ): Promise<AccessCard> {
+    const isCarExists: boolean =  await this.carRepository.exists(id)
+
+    if(!isCarExists){
+      throw new ApplicationError("This car doesn't exist", 404, "ECar001");
+    }
+
+    const isCarAlreadyHasCard: Count =  await this.accessCardRepository.count({carId: id});
+
+    if(isCarAlreadyHasCard.count){
+      throw new ApplicationError("this car already has a card", 400, "ECar002");
+    }
+
+    //adding welcome credit of 10$
+    accessCard.credit += 10;
+
     return this.carRepository.accessCard(id).create(accessCard);
   }
 
@@ -74,37 +63,54 @@ export class CarAccessCardController {
     responses: {
       '200': {
         description: 'Car.AccessCard PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: {'application/json': {schema: {remainingCredit: 0}}},
       },
     },
   })
   async patch(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(AccessCard, {partial: true}),
-        },
-      },
-    })
-    accessCard: Partial<AccessCard>,
-    @param.query.object('where', getWhereSchemaFor(AccessCard)) where?: Where<AccessCard>,
-  ): Promise<Count> {
-    return this.carRepository.accessCard(id).patch(accessCard, where);
+    @param.path.string('id') id: string
+  ): Promise<{remainingCredit: number}> {
+     const isCarExists: boolean =  await this.carRepository.exists(id)
+
+      if(!isCarExists){
+        throw new ApplicationError("This car doesn't exist", 404, "ECar001");
+      }
+
+      const isCarAlreadyHasCard: Count =  await this.accessCardRepository.count({carId: id});
+
+      if(!isCarAlreadyHasCard.count){
+        throw new ApplicationError("This car hasn't been registered yet", 400, "ECar003");
+      }
+
+      const accessCard = await this.carRepository.accessCard(id).get()
+
+      const now: Date = new Date()
+      let shouldBeCharged = false
+
+      if(!accessCard.lastChargedDate){
+        shouldBeCharged = true
+      }else{
+
+        const nowInMilliseconds: number = now.getTime();
+        const lastSwipeDatePlusOneMinute: number = new Date(accessCard.lastChargedDate).getTime() + (1000 * 60);
+
+        if(lastSwipeDatePlusOneMinute < nowInMilliseconds){
+          shouldBeCharged = true
+        }
+    }
+
+    if(shouldBeCharged){
+
+      if(accessCard.credit < 4){
+        throw new ApplicationError("The access card doesn't have enough credit", 400, "ECar004");
+      }
+
+      accessCard.credit -= 4;
+      accessCard.lastChargedDate = now.toISOString()
+      await this.accessCardRepository.updateAll(accessCard, {carId: id});
+    }
+
+    return {remainingCredit : accessCard.credit};
   }
 
-  @del('/cars/{id}/access-card', {
-    responses: {
-      '200': {
-        description: 'Car.AccessCard DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async delete(
-    @param.path.string('id') id: string,
-    @param.query.object('where', getWhereSchemaFor(AccessCard)) where?: Where<AccessCard>,
-  ): Promise<Count> {
-    return this.carRepository.accessCard(id).delete(where);
-  }
 }
