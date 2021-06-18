@@ -1,17 +1,10 @@
 import {
-  Filter,
-  FilterExcludingWhere,
-  repository,
+  repository
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, param, patch, post, requestBody,
+  response
 } from '@loopback/rest';
 import {Car} from '../models';
 import {CarRepository} from '../repositories';
@@ -24,7 +17,7 @@ export class CarController {
 
   @post('/cars')
   @response(200, {
-    description: 'Car model instance',
+    description: 'Adding a new employee\'s car ',
     content: {'application/json': {schema: getModelSchemaRef(Car)}},
   })
   async create(
@@ -45,7 +38,7 @@ export class CarController {
 
   @get('/cars')
   @response(200, {
-    description: 'Array of Car model instances',
+    description: 'Retrieve all cars',
     content: {
       'application/json': {
         schema: {
@@ -55,15 +48,13 @@ export class CarController {
       },
     },
   })
-  async find(
-    @param.filter(Car) filter?: Filter<Car>,
-  ): Promise<Car[]> {
-    return this.carRepository.find(filter);
+  async find(): Promise<Car[]> {
+    return this.carRepository.find();
   }
 
   @get('/cars/{id}')
   @response(200, {
-    description: 'Car model instance',
+    description: 'Get specific car by its Id',
     content: {
       'application/json': {
         schema: getModelSchemaRef(Car, {includeRelations: true}),
@@ -71,22 +62,21 @@ export class CarController {
     },
   })
   async findById(
-    @param.path.string('id') id: string,
-    @param.filter(Car, {exclude: 'where'}) filter?: FilterExcludingWhere<Car>
+    @param.path.string('id') id: string
   ): Promise<Car> {
-    return this.carRepository.findById(id, filter);
+    return this.carRepository.findById(id);
   }
 
   @patch('/cars/{id}')
   @response(204, {
-    description: 'Car PATCH success',
+    description: 'Update car attributes',
   })
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Car, {partial: true}),
+          schema: getModelSchemaRef(Car, {partial: true, exclude: ['id']}),
         },
       },
     })
@@ -97,7 +87,7 @@ export class CarController {
 
   @del('/cars/{id}')
   @response(204, {
-    description: 'Car DELETE success',
+    description: 'Delete a car',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.carRepository.deleteById(id);
