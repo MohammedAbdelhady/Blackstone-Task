@@ -1,10 +1,7 @@
 import {
-  Count,
-  CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
   post,
@@ -12,7 +9,6 @@ import {
   get,
   getModelSchemaRef,
   patch,
-  put,
   del,
   requestBody,
   response,
@@ -47,17 +43,6 @@ export class CarController {
     return this.carRepository.create(car);
   }
 
-  @get('/cars/count')
-  @response(200, {
-    description: 'Car model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(Car) where?: Where<Car>,
-  ): Promise<Count> {
-    return this.carRepository.count(where);
-  }
-
   @get('/cars')
   @response(200, {
     description: 'Array of Car model instances',
@@ -74,25 +59,6 @@ export class CarController {
     @param.filter(Car) filter?: Filter<Car>,
   ): Promise<Car[]> {
     return this.carRepository.find(filter);
-  }
-
-  @patch('/cars')
-  @response(200, {
-    description: 'Car PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Car, {partial: true}),
-        },
-      },
-    })
-    car: Car,
-    @param.where(Car) where?: Where<Car>,
-  ): Promise<Count> {
-    return this.carRepository.updateAll(car, where);
   }
 
   @get('/cars/{id}')
@@ -127,17 +93,6 @@ export class CarController {
     car: Car,
   ): Promise<void> {
     await this.carRepository.updateById(id, car);
-  }
-
-  @put('/cars/{id}')
-  @response(204, {
-    description: 'Car PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() car: Car,
-  ): Promise<void> {
-    await this.carRepository.replaceById(id, car);
   }
 
   @del('/cars/{id}')
