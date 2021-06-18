@@ -23,7 +23,7 @@ export class CarAccessCardController {
   @post('/cars/{id}/access-card', {
     responses: {
       '200': {
-        description: 'Car model instance',
+        description: 'Register a car in the highway and creates its access card',
         content: {'application/json': {schema: getModelSchemaRef(AccessCard)}},
       },
     },
@@ -62,7 +62,7 @@ export class CarAccessCardController {
   @patch('/cars/{id}/access-card', {
     responses: {
       '200': {
-        description: 'Car.AccessCard PATCH success count',
+        description: 'Simulation of passing through the exit gate',
         content: {'application/json': {schema: {remainingCredit: 0}}},
       },
     },
