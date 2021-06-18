@@ -1,10 +1,9 @@
 import {
-  Filter,
   repository
 } from '@loopback/repository';
 import {
   get,
-  getModelSchemaRef, param, post, requestBody,
+  getModelSchemaRef, post, requestBody,
   response
 } from '@loopback/rest';
 import {Employee} from '../models';
@@ -18,7 +17,7 @@ export class EmployeeController {
 
   @post('/employees')
   @response(200, {
-    description: 'Employee model instance',
+    description: 'Adding new employee',
     content: {'application/json': {schema: getModelSchemaRef(Employee)}},
   })
   async create(
@@ -39,7 +38,7 @@ export class EmployeeController {
 
   @get('/employees')
   @response(200, {
-    description: 'Array of Employee model instances',
+    description: 'Retrieving all employees',
     content: {
       'application/json': {
         schema: {
@@ -49,10 +48,8 @@ export class EmployeeController {
       },
     },
   })
-  async find(
-    @param.filter(Employee) filter?: Filter<Employee>,
-  ): Promise<Employee[]> {
-    return this.employeeRepository.find(filter);
+  async find(): Promise<Employee[]> {
+    return this.employeeRepository.find();
   }
 
 }
