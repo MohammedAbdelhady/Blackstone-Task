@@ -1,3 +1,4 @@
+import {RestBindings} from '@loopback/rest';
 import {ApplicationConfig, BlackstoneApplication} from './application';
 
 export * from './application';
@@ -10,6 +11,7 @@ export async function main(options: ApplicationConfig = {}) {
   const url = app.restServer.url;
   console.log(`Server is running at ${url}`);
   console.log(`Try ${url}/ping`);
+  app.bind(RestBindings.ERROR_WRITER_OPTIONS).to({safeFields: ['errCode']});
 
   return app;
 }
