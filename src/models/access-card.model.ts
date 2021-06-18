@@ -21,6 +21,10 @@ export class AccessCard extends Entity {
   })
   lastSwipeTimestamp: string;
 
+  @property({
+    type: 'string',
+  })
+  carId?: string;
 
   constructor(data?: Partial<AccessCard>) {
     super(data);
