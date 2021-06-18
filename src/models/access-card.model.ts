@@ -12,14 +12,14 @@ export class AccessCard extends Entity {
   @property({
     type: 'number',
     required: true,
+    default: 10
   })
   credit: number;
 
   @property({
     type: 'date',
-    required: true,
   })
-  lastSwipeTimestamp: string;
+  lastChargedDate: string;
 
   @property({
     type: 'string',
