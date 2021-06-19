@@ -4,12 +4,12 @@ import {juggler} from '@loopback/repository';
 const config = {
   name: 'mongoDB',
   connector: 'mongodb',
-  url: 'mongodb://gomaa:12345678@localhost:27017/blackstone',
-  host: 'localhost',
-  port: 27017,
-  user: 'gomaa',
-  password: '12345678',
-  database: 'blackstone',
+  url: process.env.DB_URL,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   useNewUrlParser: true
 };
 

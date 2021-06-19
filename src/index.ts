@@ -1,6 +1,6 @@
 import {RestBindings} from '@loopback/rest';
 import {ApplicationConfig, BlackstoneApplication} from './application';
-
+require('dotenv').config();
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
