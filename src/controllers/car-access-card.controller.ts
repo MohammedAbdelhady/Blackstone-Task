@@ -4,8 +4,7 @@ import {
 import {
   getModelSchemaRef, param,
   patch,
-  post,
-  requestBody
+  post
 } from '@loopback/rest';
 import {ApplicationError} from '../Errors/application.error';
 import {
@@ -30,16 +29,6 @@ export class CarAccessCardController {
   })
   async create(
     @param.path.string('id') id: typeof Car.prototype.id,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(AccessCard, {
-            title: 'NewAccessCardInCar',
-            exclude: ['id', 'carId', 'lastChargedDate'],
-          }),
-        },
-      },
-    }) accessCard: Omit<AccessCard, 'id'>,
   ): Promise<AccessCard> {
     const isCarExists: boolean =  await this.carRepository.exists(id)
 
@@ -53,10 +42,7 @@ export class CarAccessCardController {
       throw new ApplicationError("this car already has a card", 400, "ECar002");
     }
 
-    //adding welcome credit of 10$
-    accessCard.credit += 10;
-
-    return this.carRepository.accessCard(id).create(accessCard);
+    return this.carRepository.accessCard(id).create({});
   }
 
   @patch('/cars/{id}/access-card', {
