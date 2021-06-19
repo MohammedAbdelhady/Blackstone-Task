@@ -1,24 +1,31 @@
-# blackstone
+# Blackstone task
 
-This application is generated using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) with the
-[initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
+Task about to create a data store that keeps these car's data and the employee who
+owns the car (Name, Position, Age) and how much credit every car has in its parking access
+card.
+
+# Technologies used
+
+- NodeJs (Loopback 4)
+- MongoDB
 
 ## Install dependencies
 
-By default, dependencies were installed when this application was generated.
-Whenever dependencies in `package.json` are changed, run the following command:
+To install dependencies run the following command
 
 ```sh
 npm install
 ```
 
-To only install resolved dependencies in `package-lock.json`:
+## Run the application
+
+Creating .env file from .env.example with the following command:
 
 ```sh
-npm ci
+cp .env.example .env
 ```
 
-## Run the application
+Replace variables' value in .env with your own ones then run
 
 ```sh
 npm start
@@ -28,48 +35,6 @@ You can also run `node .` to skip the build step.
 
 Open http://127.0.0.1:3000 in your browser.
 
-## Rebuild the project
+# ERD
 
-To incrementally build the project:
-
-```sh
-npm run build
-```
-
-To force a full build by cleaning up cached artifacts:
-
-```sh
-npm run rebuild
-```
-
-## Fix code style and formatting issues
-
-```sh
-npm run lint
-```
-
-To automatically fix such issues:
-
-```sh
-npm run lint:fix
-```
-
-## Other useful commands
-
-- `npm run migrate`: Migrate database schemas for models
-- `npm run openapi-spec`: Generate OpenAPI spec into a file
-- `npm run docker:build`: Build a Docker image for this application
-- `npm run docker:run`: Run this application inside a Docker container
-
-## Tests
-
-```sh
-npm test
-```
-
-## What's next
-
-Please check out [LoopBack 4 documentation](https://loopback.io/doc/en/lb4/) to
-understand how you can continue to add features to this application.
-
-[![LoopBack](https://github.com/strongloop/loopback-next/raw/master/docs/site/imgs/branding/Powered-by-LoopBack-Badge-(blue)-@2x.png)](http://loopback.io/)
+You can find the ERD for the application models in the app root folder.
